@@ -1,22 +1,71 @@
 import React from "react"
-import { Link } from "gatsby"
+import { useQuery, useMutation } from "@apollo/client"
+import gql from "graphql-tag"
 
 import Layout from "../components/layout"
-import Image from "../components/image"
-import SEO from "../components/seo"
+import ItemContainer from "../components/ItemContainer"
 
-const IndexPage = () => (
-  <Layout>
-    <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link> <br />
-    <Link to="/using-typescript/">Go to "Using TypeScript"</Link>
-  </Layout>
-)
+const GET_LINKS = gql`
+  query {
+    links {
+      url
+      pageTitle
+      description
+    }
+  }
+`
+
+const ADD_LINK = gql`
+  mutation addLink($url: String!) {
+    addLink(url: $url) {
+      url
+    }
+  }
+`
+
+const IndexPage = () => {
+  const [url, setUrl] = React.useState("")
+  const { loading, error, data } = useQuery(GET_LINKS)
+  const [addLink] = useMutation(ADD_LINK)
+
+  const handleAddLink = () => {
+    addLink({
+      variables: {
+        url,
+      },
+      refetchQueries: [{ query: GET_LINKS }],
+    })
+  }
+
+  if (loading) {
+    return <div>Loading</div>
+  }
+
+  if (error) {
+    console.log(error)
+    return <div>Error</div>
+  }
+
+  console.log(data)
+  return (
+    <Layout>
+      <div className="input-container" >
+        <input type="text" value={url} onChange={e => setUrl(e.target.value)} />
+        <button onClick={handleAddLink}>Add Link</button>
+      </div>
+
+      <div className="container">
+        {data.links.map((d, i) => (
+          <ItemContainer
+            key={i}
+            url={d.url}
+            pageTitle={d.pageTitle}
+            description={d.description}
+          />
+        ))}
+      </div>
+    </Layout>
+  )
+}
 
 export default IndexPage

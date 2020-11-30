@@ -1,0 +1,25 @@
+.item-container{
+    border: 1px solid #ccc;
+    padding: 1em;
+    margin-bottom: 1em;
+    background: azure;
+    box-shadow: 1px 1px 3px #888;
+}
+
+.item-container a{
+    text-decoration: none;
+    /* color: black; */
+}
+
+.item-container h3{
+    color: black;
+}
+
+.read-more{
+    color: #fff;
+    font-size: 0.8em;
+   background: #a3f;
+   padding: 0.5em 1em;
+   border-radius: 5%;
+}
+
